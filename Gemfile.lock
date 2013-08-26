@@ -1,0 +1,27 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    bubble-wrap (1.3.0)
+    codependency (2.0.0)
+    map-kit-wrapper (0.0.5)
+      codependency (= 2.0.0)
+      rake
+    motion-pixate (1.2)
+      sass
+    motion-require (0.0.7)
+    motion-resource (0.1.4)
+      bubble-wrap
+      motion-support (>= 0.2.3)
+    motion-support (0.2.4)
+      motion-require (>= 0.0.6)
+    rake (10.1.0)
+    sass (3.2.10)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bubble-wrap (~> 1.3.0)
+  map-kit-wrapper
+  motion-pixate
+  motion-resource
