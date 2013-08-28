@@ -3,27 +3,27 @@ class MainController < UIViewController
   def viewDidLoad
     super
     self.title = 'Next'
-    @table = UITableView.alloc.initWithFrame(CGRectMake(0, 100, view.frame.size.width, view.frame.size.height - 100))
-    @table.dataSource = self
+    @table = UITableView.alloc.initWithFrame(CGRectMake(0, 130, view.frame.size.width, view.frame.size.height - 130))
     @table.backgroundColor = UIColor.clearColor
+    @table.dataSource = self
     @table.delegate = self
 
-    @map_view = MKMapView.alloc.init
+    @map_view = MKMapView.new
     @map_view.delegate = self
     @map_view.frame = self.view.frame
     # @map_view.shows_user_location = true
     # @map_view.zoom_enabled = true
     self.view.addSubview @map_view
-    # self.view.addSubview @table
+    self.view.addSubview @table
     @cells = []
     load_data
   end
 
-  def mapView(map, didUpdateUserLocation:user_location)
-    return unless has_user_coordinate?
-    region = MKCoordinateRegionMakeWithDistance(user_coordinate,5000,5000)
-    @map_view.region = region
-  end
+  # def mapView(map, didUpdateUserLocation:user_location)
+  #   return unless has_user_coordinate?
+  #   region = MKCoordinateRegionMakeWithDistance(user_coordinate,5000,5000)
+  #   @map_view.region = region
+  # end
 
   def user_coordinate
     @map_view.userLocation.location.coordinate
@@ -37,10 +37,10 @@ class MainController < UIViewController
     scroll_offset = scrollView.contentOffset.y
     map_frame = @map_view.frame
     if scroll_offset < 0
-      map_frame.origin.y = -100 - (scroll_offset / 3)
+      map_frame.origin.y = -130 - (scroll_offset / 3)
     else
       # @table.origin.y = @table.origin.y - scroll_offset
-      map_frame.origin.y = -100 - scroll_offset
+      # map_frame.origin.y = -100 - scroll_offset
     end
     @map_view.frame = map_frame
   end
@@ -58,8 +58,10 @@ class MainController < UIViewController
 
     cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier)
     cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier: @reuseIdentifier)
-
     if !@cells.empty?
+      FeedItem.find(@cells[indexPath.row][:id]) do |item, response|
+        @map_view.addAnnotation(item)
+      end
       cell.backgroundColor = UIColor.cyanColor
       cell.textLabel.text = @cells[indexPath.row][:title]
       cell.detailTextLabel.text = @cells[indexPath.row][:description]
@@ -73,8 +75,8 @@ class MainController < UIViewController
         region = MKCoordinateRegionMake(feed_items.first.coordinate, MKCoordinateSpanMake(0.5, 0.5))
         @map_view.setRegion(region)
         feed_items.map do |item|
-          @map_view.addAnnotation(item)
-          @cells << { title: item.name,
+          @cells << { id: item.id,
+                      title: item.name,
                       description: item.description,
                       action: :show_details,
                       arguments: { id: item.id } }
