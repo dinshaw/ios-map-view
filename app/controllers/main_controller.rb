@@ -1,5 +1,5 @@
 class MainController < UIViewController
-  # include MapKit
+  include MapKit
   def viewDidLoad
     super
     self.title = 'Next'
@@ -8,11 +8,11 @@ class MainController < UIViewController
     @table.dataSource = self
     @table.delegate = self
 
-    @map_view = MKMapView.new
+    @map_view = MapView.new
     @map_view.delegate = self
-    @map_view.frame = self.view.frame
+    @map_view.frame = CGRectMake(0, -50, view.frame.size.width, 230)
     # @map_view.shows_user_location = true
-    # @map_view.zoom_enabled = true
+    @map_view.zoom_enabled = true
     self.view.addSubview @map_view
     self.view.addSubview @table
     @cells = []
@@ -38,7 +38,7 @@ class MainController < UIViewController
     scroll_offset = scrollView.contentOffset.y
     map_frame = @map_view.frame
     if scroll_offset < 0
-      map_frame.origin.y = -130 - (scroll_offset / 3)
+      map_frame.origin.y = -50 - (scroll_offset / 3)
     else
       # @table.origin.y = @table.origin.y - scroll_offset
       # map_frame.origin.y = -100 - scroll_offset
@@ -63,6 +63,8 @@ class MainController < UIViewController
     if !@cells.empty?
       item = @cells[indexPath.row][:item]
       @map_view.addAnnotation(item)
+      region = MKCoordinateRegionMakeWithDistance(item.coordinate, 5000,5000)
+      @map_view.setRegion region
       @pins[@cells[indexPath.row][:title]] = item
       cell.backgroundColor = UIColor.cyanColor
       cell.textLabel.text = @cells[indexPath.row][:title]
