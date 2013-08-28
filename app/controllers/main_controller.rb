@@ -16,6 +16,7 @@ class MainController < UIViewController
     self.view.addSubview @map_view
     self.view.addSubview @table
     @cells = []
+    @pins = {}
     load_data
   end
 
@@ -57,11 +58,12 @@ class MainController < UIViewController
     @reuseIdentifier ||= "CELL_IDENTIFIER"
 
     cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier)
+    @map_view.removeAnnotation(@pins[cell.textLabel.text]) if cell
     cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier: @reuseIdentifier)
     if !@cells.empty?
-      FeedItem.find(@cells[indexPath.row][:id]) do |item, response|
-        @map_view.addAnnotation(item)
-      end
+      item = @cells[indexPath.row][:item]
+      @map_view.addAnnotation(item)
+      @pins[@cells[indexPath.row][:title]] = item
       cell.backgroundColor = UIColor.cyanColor
       cell.textLabel.text = @cells[indexPath.row][:title]
       cell.detailTextLabel.text = @cells[indexPath.row][:description]
@@ -75,7 +77,7 @@ class MainController < UIViewController
         region = MKCoordinateRegionMake(feed_items.first.coordinate, MKCoordinateSpanMake(0.5, 0.5))
         @map_view.setRegion(region)
         feed_items.map do |item|
-          @cells << { id: item.id,
+          @cells << { item: item,
                       title: item.name,
                       description: item.description,
                       action: :show_details,
