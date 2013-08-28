@@ -10,7 +10,7 @@ class MainController < UIViewController
 
     @map_view = MapView.new
     @map_view.delegate = self
-    @map_view.frame = CGRectMake(0, -50, view.frame.size.width, 230)
+    @map_view.frame = CGRectMake(0, -75, view.frame.size.width, 280)
     # @map_view.shows_user_location = true
     @map_view.zoom_enabled = true
     self.view.addSubview @map_view
@@ -38,7 +38,7 @@ class MainController < UIViewController
     scroll_offset = scrollView.contentOffset.y
     map_frame = @map_view.frame
     if scroll_offset < 0
-      map_frame.origin.y = -50 - (scroll_offset / 3)
+      map_frame.origin.y = -75 - (scroll_offset / 3)
     else
       # @table.origin.y = @table.origin.y - scroll_offset
       # map_frame.origin.y = -100 - scroll_offset
