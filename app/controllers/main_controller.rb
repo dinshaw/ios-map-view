@@ -1,5 +1,5 @@
 class MainController < UIViewController
-  include MapKit
+  # include MapKit
   def viewDidLoad
     super
     self.title = 'Next'
@@ -8,11 +8,11 @@ class MainController < UIViewController
     @table.backgroundColor = UIColor.clearColor
     @table.delegate = self
 
-    @map_view = MapView.new
+    @map_view = MKMapView.alloc.init
     @map_view.delegate = self
     @map_view.frame = self.view.frame
-    @map_view.shows_user_location = true
-    @map_view.zoom_enabled = true
+    # @map_view.shows_user_location = true
+    # @map_view.zoom_enabled = true
     self.view.addSubview @map_view
     # self.view.addSubview @table
     @cells = []
@@ -70,11 +70,14 @@ class MainController < UIViewController
   def load_data(refreshing = false)
     FeedItem.find_all do |feed_items, response|
       if response.ok?
+        region = MKCoordinateRegionMake(feed_items.first.coordinate, MKCoordinateSpanMake(0.5, 0.5))
+        @map_view.setRegion(region)
         feed_items.map do |item|
+          @map_view.addAnnotation(item)
           @cells << { title: item.name,
                       description: item.description,
-                     action: :show_details,
-                     arguments: { id: item.id } }
+                      action: :show_details,
+                      arguments: { id: item.id } }
         end
         @table.reloadData
       else
