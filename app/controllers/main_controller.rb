@@ -26,6 +26,26 @@ class MainController < UIViewController
   #   @map_view.region = region
   # end
 
+  ViewIdentifier = 'ViewIdentifier'
+  def mapView(mapView, viewForAnnotation:item)
+    if view = mapView.dequeueReusableAnnotationViewWithIdentifier(ViewIdentifier)
+      view.annotation = item
+    else
+      view = MKPinAnnotationView.alloc.initWithAnnotation(item, reuseIdentifier:ViewIdentifier)
+      view.canShowCallout = true
+      view.animatesDrop = true
+      button = UIButton.buttonWithType(UIButtonTypeDetailDisclosure)
+      button.addTarget(self, action: :'show_details:', forControlEvents:UIControlEventTouchUpInside)
+      view.rightCalloutAccessoryView = button
+    end
+    view
+  end
+
+  def show_details
+    controller = FeedItemDetailsController.alloc.init
+    self.pushViewController(controller, animated: true)
+  end
+
   def user_coordinate
     @map_view.userLocation.location.coordinate
   end
